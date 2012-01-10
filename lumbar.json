@@ -1,6 +1,6 @@
 {
   "application": {
-    "name": "Example",
+    "name": "Application",
     "module": "base"
   },
   "platforms": [ "android", "iphone", "ipad", "web" ],
@@ -15,29 +15,27 @@
       "combine": true
     }
   },
-
   "modules": {
     "base": {
       "scripts": [
-        {"src": "js/zepto.js", "global": true},
-        {"src": "js/underscore.js", "global": true},
-        {"src": "js/backbone.js", "global": true},
-        {"src": "js/handlebars.js", "global": true},
-        {"src": "js/thorax.js", "global": true},
-        {"src": "js/script.js", "global": true},
-        {"src": "js/init.js", "global": true},
+        {"src": "js/lib/zepto.js", "global": true},
+        {"src": "js/lib/underscore.js", "global": true},
+        {"src": "js/lib/backbone.js", "global": true},
+        {"src": "js/lib/handlebars.js", "global": true},
+        {"src": "js/lib/thorax.js", "global": true},
+        {"src": "js/lib/script.js", "global": true},
+        {"src": "js/lib/lumbar-loader.js", "platform": "web"},
+        {"src": "js/lib/lumbar-loader-events.js", "platform": "web"},
+        {"src": "js/lib/lumbar-loader-standard.js", "platform": "web"},
+        {"src": "js/lib/lumbar-loader-backbone.js", "platform": "web"},
+        "js/init.js",
         "js/router.js",
         "js/model.js",
         "js/collection.js",
         "js/view.js",
-        {"src": "js/lumbar-loader.js", "platform": "web"},
-        {"src": "js/lumbar-loader-events.js", "platform": "web"},
-        {"src": "js/lumbar-loader-standard.js", "platform": "web"},
-        {"src": "js/lumbar-loader-backbone.js", "platform": "web"},
         {"src": "js/bridge.js", "platforms": ["iphone", "ipad", "android"]},
         {"src": "js/bridge-android.js", "platform": "android"},
         {"src": "js/bridge-ios.js", "platforms": ["ipad","iphone"]},
-        {"package-config": true},
         {"module-map": true}
       ],
       "styles": [
