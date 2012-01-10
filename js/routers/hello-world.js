@@ -1,8 +1,6 @@
-/* BEGIN js/routers/home.js */
-Example.Router.create(module, {
+Application.Router.create(module, {
   home: function() {
-    var home = new Example.Views.Home();
-    home.render();
+    var view = this.view('hello-world/index');
+    this.setView(view);
   }
 });
-/* END js/routers/home.js */
