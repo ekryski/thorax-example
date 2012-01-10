@@ -1,2 +1,3 @@
-exports.Router = {
-};
+exports.Router = Thorax.Router.extend({
+  
+});
