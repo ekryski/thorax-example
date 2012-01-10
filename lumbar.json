@@ -55,8 +55,6 @@
       },
       "scripts": [
         "js/views/hello-world",
-        "js/models/hello-world",
-        "js/collections/hello-world",
         "js/routers/hello-world.js"
       ],
       "styles": [
