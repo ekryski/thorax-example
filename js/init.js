@@ -4,5 +4,6 @@ Thorax.configure({
 });
 
 $(document).ready(function() {
+  exports.initBackboneLoader();
   Backbone.history.start();
 });
