@@ -738,8 +738,8 @@
   //events and mixins properties need act as inheritable, not static / shared
   Thorax.View.extend = function(protoProps, classProps) {
     var child = Backbone.View.extend.call(this, protoProps, classProps);
-    if (child.name) {
-      scope.Views[child.name] = child;
+    if (child.prototype.name) {
+      scope.Views[child.prototype.name] = child;
     }
     child.mixins = _.clone(this.mixins);
     child.events = _.clone(this.events);
@@ -899,17 +899,23 @@
   ];
 
   function processEvent(name, handler) {
-    if (!name.match(/\s+/) && domEvents.indexOf(name) === -1) {
-      //view events
-      this.bind(name, this._bindEventHandler(handler));
+    if (name.match(/,/)) {
+      _.each(name.split(/,/), _.bind(function(fragment) {
+        processEvent.call(this, fragment.replace(/(^[\s]+|[\s]+$)/g, ''), handler);
+      }, this));
     } else {
-      //DOM events
-      var match = name.match(eventSplitter);
-      var eventName = match[1] + '.delegateEvents' + this.cid, selector = match[2];
-      if (selector === '') {
-        $(this.el).bind(eventName, containHandlerToCurentView(this._bindEventHandler(handler), this.cid));
+      if (!name.match(/\s+/) && domEvents.indexOf(name) === -1) {
+        //view events
+        this.bind(name, this._bindEventHandler(handler));
       } else {
-        $(this.el).delegate(selector, eventName, containHandlerToCurentView(this._bindEventHandler(handler), this.cid));
+        //DOM events
+        var match = name.match(eventSplitter);
+        var eventName = match[1] + '.delegateEvents' + this.cid, selector = match[2];
+        if (selector === '') {
+          $(this.el).bind(eventName, containHandlerToCurentView(this._bindEventHandler(handler), this.cid));
+        } else {
+          $(this.el).delegate(selector, eventName, containHandlerToCurentView(this._bindEventHandler(handler), this.cid));
+        }
       }
     }
   };
@@ -1096,6 +1102,11 @@
         $(old_view.el).remove();
       }
 
+      //make sure the view has been rendered at least once
+      if (!view._renderCount) {
+        view.render();
+      }
+
       this.views.appendChild(view.el);
   
       window.scrollTo(0, minimumScrollYOffset);
@@ -1136,6 +1147,9 @@
         throw new Error('view: ' + name + ' does not exist.');
       }
       return new scope.Views[name](attributes);
+    },
+    setView: function() {
+      return scope.layout.setView.apply(scope.layout, arguments);
     },
     bindToRoute: bindToRoute
   },{
@@ -1178,6 +1192,7 @@
     fetch: function(options) {
       fetchQueue.call(this, options || {}, Backbone.Collection.prototype.fetch);
     },
+    sync: sync,
     load: loadData
   });
 
@@ -1193,6 +1208,7 @@
     fetch: function(options) {
       fetchQueue.call(this, options || {}, Backbone.Model.prototype.fetch);
     },
+    sync: sync,
     load: loadData
   });
 
@@ -1203,6 +1219,26 @@
     }
     return child;
   };
+
+  function sync(method, model_or_collection, options) {
+    var success, error;
+    if (options.success) {
+      success = options.success;
+      options.success = function() {
+        model_or_collection.trigger('load:end');
+        return success.apply(this, arguments);
+      };
+    }
+    if (options.error) {
+      error = options.error;
+      options.error = function() {
+        model_or_collection.trigger('load:end');
+        return error.apply(this, arguments);
+      };
+    }
+    model_or_collection.trigger('load:start');
+    return Backbone.sync.apply(this, arguments);
+  }
 
   function loadData(callback, failback) {
     if (this.isPopulated()) {
@@ -1247,6 +1283,7 @@
   function flushQueue(self, fetchQueue, handler) {
     return function() {
       var args = arguments;
+
       // Flush the queue. Executes any callback handlers that
       // may have been passed in the fetch options.
       fetchQueue.forEach(function(options) {
