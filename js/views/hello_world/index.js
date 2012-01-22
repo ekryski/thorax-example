@@ -1,3 +1,3 @@
 Application.View.extend({
-  name: 'hello-world/index'
+  name: 'hello_world/index'
 });

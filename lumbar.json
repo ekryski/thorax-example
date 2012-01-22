@@ -11,7 +11,7 @@
     },
     "native-hello-world": {
       "platforms": [ "android", "iphone", "ipad" ],
-      "modules": [ "base", "hello-world" ],
+      "modules": [ "base", "hello_world" ],
       "combine": true
     }
   },
@@ -49,23 +49,23 @@
         {"src": "static/#{platform}/index.html", "dest": "index.html"}
       ]
     },
-    "hello-world": {
+    "hello_world": {
       "routes": {
         "": "index",
         "hello": "index"
       },
       "scripts": [
-        "js/views/hello-world",
-        "js/routers/hello-world.js"
+        "js/views/hello_world",
+        "js/routers/hello_world.js"
       ],
       "styles": [
-        "styles/hello-world.styl"
+        "styles/hello_world.styl"
       ]
     }
   },
   "templates": {
-    "js/views/hello-world/index.js": [
-      "templates/hello-world/index.handlebars"
+    "js/views/hello_world/index.js": [
+      "templates/hello_world/index.handlebars"
     ]
   },
   "styles": {
