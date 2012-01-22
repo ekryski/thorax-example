@@ -51,7 +51,8 @@
     },
     "hello-world": {
       "routes": {
-        "": "index"
+        "": "index",
+        "hello": "index"
       },
       "scripts": [
         "js/views/hello-world",

@@ -1,14 +1,11 @@
 # Example #
 
-This is an example of a complete lumbar project. To compile, run this
-command from the example directory.
+This is an example of a complete lumbar and thorax project. To compile, run:
 
-    ../bin/lumbar build --config config/dev.json lumbar.json public
+    npm install -g lumbar
+    lumbar build lumbar.json ./build
 
 # Prerequisites #
 
 * nodejs
 * npm
-
-
-
