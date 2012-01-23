@@ -9,8 +9,3 @@ $(document).ready(function() {
   }
   Backbone.history.start();
 });
-
-//TODO: remove
-if (!exports.moduleMap) { 
-  exports.moduleMap = function(){}
-}

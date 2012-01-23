@@ -36,7 +36,7 @@
         {"src": "js/bridge.js", "platforms": ["iphone", "ipad", "android"]},
         {"src": "js/bridge-android.js", "platform": "android"},
         {"src": "js/bridge-ios.js", "platforms": ["ipad","iphone"]},
-        {"module-map": true}
+        {"module-map": true, "platforms": ["web"]}
       ],
       "styles": [
         "styles/base.styl",
