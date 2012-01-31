@@ -76,7 +76,7 @@
         }
       };
     },
-    throttleLoadEnd: function(end) {
+    throttleLoadEnd: function(end, timeout) {
       return function(background) {
         var self = this;
         if (self._loadStart) {
@@ -84,7 +84,10 @@
 
           // Reset the end timeout
           clearTimeout(self._loadStart.endTimeout);
-          self._loadStart.endTimeout = setTimeout(function(){
+          if (typeof timeout === 'undefined') {
+            timeout = 100;
+          }
+          var callback = function(){
             if (self._loadStart.pending <= 0) {
               var run = self._loadStart.run;
 
@@ -97,7 +100,12 @@
                 end.call(self, background);
               }
             }
-          }, 100);
+          };
+          if (timeout) {
+            self._loadStart.endTimeout = setTimeout(callback, timeout);
+          } else {
+            callback();
+          }
         }
       };
     }
@@ -330,14 +338,14 @@
         this.model.trigger('set', this.model, old_model);
     
         if (this._shouldFetch(this.model, this._modelOptions)) {
-          this.model.fetch({
+          this.model.fetch(_.extend(_.isObject(this._modelOptions.fetch) ? this._modelOptions.fetch : {}, {
             ignoreErrors: this.ignoreFetchError,
             success: _.once(_.bind(function(){
               if (this._modelOptions.success) {
                 this._modelOptions.success(model);
               }
             },this))
-          });
+          }));
         } else {
           //want to trigger built in event handler (render() + populate())
           //without triggering event on model
@@ -381,14 +389,14 @@
         this.collection.trigger('set', this.collection, old_collection);
 
         if (this._shouldFetch(this.collection, this._collectionOptions)) {
-          this.collection.fetch({
+          this.collection.fetch(_.extend(_.isObject(this._collectionOptions.fetch) ? this._collectionOptions.fetch : {}, {
             ignoreErrors: this.ignoreFetchError,
             success: _.once(_.bind(function(){
               if (this._collectionOptions.success) {
                 this._collectionOptions.success(this.collection);
               }
             },this))
-          });
+          }));
         } else {
           //want to trigger built in event handler (render())
           //without triggering event on collection
@@ -1208,8 +1216,8 @@
 
   Thorax.Collection.extend = function(protoProps, classProps) {
     var child = Backbone.Collection.extend.call(this, protoProps, classProps);
-    if (child.name) {
-      scope.Collections[child.name] = child;
+    if (child.prototype.name) {
+      scope.Collections[child.prototype.name] = child;
     }
     return child;
   };
@@ -1224,8 +1232,8 @@
 
   Thorax.Model.extend = function(protoProps, classProps) {
     var child = Backbone.Model.extend.call(this, protoProps, classProps);
-    if (child.name) {
-      scope.Models[child.name] = child;
+    if (child.prototype.name) {
+      scope.Models[child.prototype.name] = child;
     }
     return child;
   };
@@ -1250,9 +1258,14 @@
     return Backbone.sync.apply(this, arguments);
   }
 
-  function loadData(callback, failback) {
+  function loadData(callback, failback, options) {
     if (this.isPopulated()) {
       return callback(this);
+    }
+
+    if (arguments.length === 2 && typeof failback !== 'function' && _.isObject(failback)) {
+      options = failback;
+      failback = false;
     }
 
     function finalizer(isError) {
@@ -1266,13 +1279,13 @@
     var errorHandler = _.bind(finalizer, this, true);
     this.bind('error', errorHandler);
 
-    this.fetch({
+    this.fetch(_.extend(options || {}, {
       success: bindToRoute(_.bind(function() {
           this.unbind('error', errorHandler);
           callback.apply(this, arguments);
         }, this),
         _.bind(finalizer, this, false))
-    });
+    }));
   }
 
   function fetchQueue(options, $super) {
