@@ -1,6 +1,7 @@
 Thorax.configure({
   scope: exports,
-  layout: '.layout'
+  layout: '.layout',
+  templatePathPrefix: 'templates/'
 });
 
 $(document).ready(function() {
